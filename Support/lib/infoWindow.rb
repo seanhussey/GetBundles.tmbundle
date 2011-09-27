@@ -15,13 +15,13 @@ def infoDIALOG(dlg)
   return if $close
 
   mode = case bundle['status']
-    when "Official": "svn"
-    when "Under Review": "svn"
+    when "Official" then "svn"
+    when "Under Review" then "svn"
     else "url"
   end
   if mode == "url" && bundle.has_key?('url')
     mode = case bundle['url']
-      when /^http:\/\/github\.com/: "github"
+      when /github\.com/ then "github"
       else "url"
     end
   end
@@ -278,10 +278,10 @@ osascript -e 'tell app "TextMate" to reload bundles'</small></small></pre>
       io << "<b>Description:</b><br />&nbsp;#{plist['description']}<br />" unless plist['description'].empty?
       contact = ""
       contact = case
-        when plist['contactName'].empty? && plist['contactEmailRot13'].empty?:  "<font color=#666666><small>no data available</small></font>"
-        when plist['contactName'].empty? && !plist['contactEmailRot13'].empty?: "<a href='mailto:#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}'>#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}</a>"
-        when !plist['contactName'].empty? && plist['contactEmailRot13'].empty?: plist['contactName']
-        when !plist['contactName'].empty? && !plist['contactEmailRot13'].empty?: "<a href='mailto:#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}'>#{plist['contactName']}</a>" 
+        when plist['contactName'].empty? && plist['contactEmailRot13'].empty? then  "<font color=#666666><small>no data available</small></font>"
+        when plist['contactName'].empty? && !plist['contactEmailRot13'].empty? then "<a href='mailto:#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}'>#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}</a>"
+        when !plist['contactName'].empty? && plist['contactEmailRot13'].empty? then plist['contactName']
+        when !plist['contactName'].empty? && !plist['contactEmailRot13'].empty? then "<a href='mailto:#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}'>#{plist['contactName']}</a>" 
       end
       io << "<b>Contact Name:</b><br />&nbsp;#{contact}<br />"
     end
@@ -376,10 +376,10 @@ def svnInfo(bundle)
 
   contact = ""
   contact = case
-    when plist['contactName'].empty? && plist['contactEmailRot13'].empty?:  "<font color=#666666><small>no data available</small></font>"
-    when plist['contactName'].empty? && !plist['contactEmailRot13'].empty?: "<a href='mailto:#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}'>#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}</a>"
-    when !plist['contactName'].empty? && plist['contactEmailRot13'].empty?: plist['contactName']
-    when !plist['contactName'].empty? && !plist['contactEmailRot13'].empty?: "<a href='mailto:#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}'>#{plist['contactName']}</a>" 
+    when plist['contactName'].empty? && plist['contactEmailRot13'].empty? then  "<font color=#666666><small>no data available</small></font>"
+    when plist['contactName'].empty? && !plist['contactEmailRot13'].empty? then "<a href='mailto:#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}'>#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}</a>"
+    when !plist['contactName'].empty? && plist['contactEmailRot13'].empty? then plist['contactName']
+    when !plist['contactName'].empty? && !plist['contactEmailRot13'].empty? then "<a href='mailto:#{plist['contactEmailRot13'].tr("A-Ma-mN-Zn-z","N-Zn-zA-Ma-m")}'>#{plist['contactName']}</a>" 
   end
   info['Last Changed Author'] = $nicknames[info['Last Changed Author']] if ! $nicknames.nil? and $nicknames.has_key?(info['Last Changed Author'])
 

@@ -202,13 +202,13 @@ end
 
 def getRepoAbbrev(aBundleDict)
   repo = case aBundleDict['status']
-    when "Official":      "Official"
-    when "Under Review":  "Review"
+    when "Official" then      "Official"
+    when "Under Review" then  "Review"
     else "3"
   end
   if repo == "3" && aBundleDict.has_key?('url')
     repo = case aBundleDict['url']
-      when /github\.com/: "Github"
+      when /github\.com/ then "Github"
       else "Private"
     end
   end
@@ -343,7 +343,7 @@ def getBundleLists
   
   $listsLoaded = false
   $dataarray  = [ ]
-  break if $close
+  abort if $close
   
   unless $firstrun
     $params = {
@@ -968,9 +968,9 @@ end
 
 def filterDataarrayForParams
   b = case $params['bundleSelection']
-    when "Review":      $dataarray.select {|v| v['source'] =~ /^R/}
-    when "Official":    $dataarray.select {|v| v['source'] =~ /^O/}
-    when "3rd Party":   $dataarray.select {|v| v['source'] !~ /^[OR]/}
+    when "Review" then      $dataarray.select {|v| v['source'] =~ /^R/}
+    when "Official" then    $dataarray.select {|v| v['source'] =~ /^O/}
+    when "3rd Party" then   $dataarray.select {|v| v['source'] !~ /^[OR]/}
     else $dataarray
   end
   $params['dataarray'] = b
@@ -1168,48 +1168,48 @@ while $run do
 
   if $dialogResult.has_key?('returnArgument')
     case $dialogResult['returnArgument']
-      when 'installAllUpdates': $installThread = Thread.new { installAllUpdates }
-      when 'helpButtonIsPressed':   helpDIALOG
-      when 'cancelButtonIsPressed': 
-        $close = true
-        $params['isBusy'] = false
-        $firstrun = false
-        updateDIALOG
-      when 'infoButtonIsPressed':   $infoThread = Thread.new { infoDIALOG($dialogResult) }
-      when 'revealInFinderIsPressed':
-        $finder_app = ENV['TM_GETBUNDLES_REVEAL_BUNDLE_IN'] || "Finder"
-        %x{osascript -e 'tell app "#{$finder_app}" to reveal POSIX file("#{$localBundles[$dialogResult['uuid']]['path']}")'}
-      when 'openAsProjectIsPressed': %x{mate '#{$localBundles[$dialogResult['uuid']]['path']}'}
-      when 'deleteButtonIsPressed':
-        case $dialogResult['action']
-          when "Enable": enableBundle($localBundles[$dialogResult['uuid']], $dialogResult['path'])
-          when "Undelete": unDeleteBundle($localBundles[$dialogResult['uuid']], $dialogResult['path'])
-          else
-            deleteBundle($dialogResult['uuid'])
-        end
-      when 'closeButtonIsPressed':
-        closeMe
-        break
-      else # install bundle(s)
-        if $params['isBusy'] == false
-          if $dialogResult['returnArgument'].first =~ /-/
-            begin
-              %x{mate '#{local_bundle_paths[$localBundles[$dialogResult['returnArgument'].first]['location']]}/#{$localBundles[$dialogResult['returnArgument'].first]['name']}.tmbundle'} if $localBundles.has_key?($dialogResult['returnArgument'].first)
-            rescue
-            end
-          else
-            if $dialogResult['returnArgument'].size > 10
-              if askDIALOG("Do you really want to install %d bundles?" % $dialogResult['returnArgument'].size ,"") == 1
-                $installThread = Thread.new { installBundles($dialogResult) }
-              end
-            else
-              $installThread = Thread.new { installBundles($dialogResult) }
-            end
+    when 'installAllUpdates' then $installThread = Thread.new { installAllUpdates }
+    when 'helpButtonIsPressed' then   helpDIALOG
+    when 'cancelButtonIsPressed'
+      $close = true
+      $params['isBusy'] = false
+      $firstrun = false
+      updateDIALOG
+    when 'infoButtonIsPressed' then   $infoThread = Thread.new { infoDIALOG($dialogResult) }
+    when 'revealInFinderIsPressed'
+      $finder_app = ENV['TM_GETBUNDLES_REVEAL_BUNDLE_IN'] || "Finder"
+      %x{osascript -e 'tell app "#{$finder_app}" to reveal POSIX file("#{$localBundles[$dialogResult['uuid']]['path']}")'}
+    when 'openAsProjectIsPressed' then %x{mate '#{$localBundles[$dialogResult['uuid']]['path']}'}
+    when 'deleteButtonIsPressed'
+      case $dialogResult['action']
+        when "Enable" then enableBundle($localBundles[$dialogResult['uuid']], $dialogResult['path'])
+        when "Undelete" then unDeleteBundle($localBundles[$dialogResult['uuid']], $dialogResult['path'])
+        else
+          deleteBundle($dialogResult['uuid'])
+      end
+    when 'closeButtonIsPressed'
+      closeMe
+      break
+    else # install bundle(s)
+      if $params['isBusy'] == false
+        if $dialogResult['returnArgument'].first =~ /-/
+          begin
+            %x{mate '#{local_bundle_paths[$localBundles[$dialogResult['returnArgument'].first]['location']]}/#{$localBundles[$dialogResult['returnArgument'].first]['name']}.tmbundle'} if $localBundles.has_key?($dialogResult['returnArgument'].first)
+          rescue
           end
         else
-          writeToLogFile("User interaction was ignored. GetBundles is busy…\n#{$params['progressText']}")
+          if $dialogResult['returnArgument'].size > 10
+            if askDIALOG("Do you really want to install %d bundles?" % $dialogResult['returnArgument'].size ,"") == 1
+              $installThread = Thread.new { installBundles($dialogResult) }
+            end
+          else
+            $installThread = Thread.new { installBundles($dialogResult) }
+          end
         end
+      else
+        writeToLogFile("User interaction was ignored. GetBundles is busy…\n#{$params['progressText']}")
       end
+    end
   elsif $dialogResult['openBundleEditor'] == 1
     %x{osascript -e 'tell app "System Events" to keystroke "b" using {control down, option down, command down}' }
     $params['openBundleEditor'] = 0 # hide checkmark in menu
